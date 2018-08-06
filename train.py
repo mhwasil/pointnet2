@@ -130,7 +130,7 @@ def train():
             accuracy = tf.reduce_sum(tf.cast(correct, tf.float32)) / float(BATCH_SIZE)
             tf.summary.scalar('accuracy', accuracy)
 
-            print "--- Get training operator"
+            print ("--- Get training operator")
             # Get training operator
             learning_rate = get_learning_rate(batch)
             tf.summary.scalar('learning_rate', learning_rate)
@@ -280,6 +280,9 @@ def eval_one_epoch(sess, ops, test_writer):
 
 
 if __name__ == "__main__":
+    config = tf.ConfigProto()
+    config.gpu_options.allocator_type ='BFC'
+    config.gpu_options.per_process_gpu_memory_fraction = 0.90
     log_string('pid: %s'%(str(os.getpid())))
     train()
     LOG_FOUT.close()
