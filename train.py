@@ -280,9 +280,6 @@ def eval_one_epoch(sess, ops, test_writer):
 
 
 if __name__ == "__main__":
-    config = tf.ConfigProto()
-    config.gpu_options.allocator_type ='BFC'
-    config.gpu_options.per_process_gpu_memory_fraction = 0.90
     log_string('pid: %s'%(str(os.getpid())))
     train()
     LOG_FOUT.close()
