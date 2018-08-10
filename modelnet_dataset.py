@@ -33,14 +33,16 @@ class ModelNetDataset():
         self.cat = [line.rstrip() for line in open(self.catfile)]
         self.classes = dict(zip(self.cat, range(len(self.cat))))  
         self.normal_channel = normal_channel
-        
+        print (self.classes)
         shape_ids = {}
         if modelnet10:
             shape_ids['train'] = [line.rstrip() for line in open(os.path.join(self.root, 'modelnet10_train.txt'))] 
             shape_ids['test']= [line.rstrip() for line in open(os.path.join(self.root, 'modelnet10_test.txt'))]
         else:
-            shape_ids['train'] = [line.rstrip() for line in open(os.path.join(self.root, 'modelnet40_train.txt'))] 
-            shape_ids['test']= [line.rstrip() for line in open(os.path.join(self.root, 'modelnet40_test.txt'))]
+            #shape_ids['train'] = [line.rstrip() for line in open(os.path.join(self.root, 'modelnet40_train.txt'))] 
+            #shape_ids['test']= [line.rstrip() for line in open(os.path.join(self.root, 'modelnet40_test.txt'))]
+            shape_ids['train'] = [line.rstrip() for line in open(os.path.join(self.root, 'modelnet14_train.txt'))] 
+            shape_ids['test']= [line.rstrip() for line in open(os.path.join(self.root, 'modelnet14_test.txt'))]
         assert(split=='train' or split=='test')
         shape_names = ['_'.join(x.split('_')[0:-1]) for x in shape_ids[split]]
         # list of (shape_name, shape_txt_file_path) tuple
@@ -128,17 +130,18 @@ class ModelNetDataset():
         return batch_data, batch_label
     
 if __name__ == '__main__':
-    d = ModelNetDataset(root = '../data/modelnet40_normal_resampled', split='test')
+    d = ModelNetDataset(root = 'dataset_generator/atwork_generated_dataset', 
+                        split='test', modelnet10=False, npoints=120)
     print(d.shuffle)
     print(len(d))
     import time
     tic = time.time()
-    for i in range(10):
+    for i in range(14):
         ps, cls = d[i]
     print(time.time() - tic)
     print(ps.shape, type(ps), cls)
 
     print(d.has_next_batch())
     ps_batch, cls_batch = d.next_batch(True)
-    print(ps_batch.shape)
-    print(cls_batch.shape)
+    print("batch size",ps_batch.shape)
+    print("class batch", cls_batch.shape)
