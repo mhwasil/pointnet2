@@ -51,7 +51,7 @@ NUM_CLASSES = 40
 SHAPE_NAMES = [line.rstrip() for line in open(os.path.join(ROOT_DIR, DATASET_PATH, CLASS_LABEL_LIST))] 
 
 HOSTNAME = socket.gethostname()
-
+print ("FLAAAAAAAAAAAAA", FLAGS.normal)
 # Shapenet official train/test split
 if FLAGS.normal:
     assert(NUM_POINT<=10000)
@@ -121,7 +121,6 @@ def eval_one_epoch(sess, ops, num_votes=1, topk=1):
     shape_ious = []
     total_seen_class = [0 for _ in range(NUM_CLASSES)]
     total_correct_class = [0 for _ in range(NUM_CLASSES)]
-    los_val = None
 
     while TEST_DATASET.has_next_batch():
         batch_data, batch_label = TEST_DATASET.next_batch(augment=False)
@@ -137,11 +136,13 @@ def eval_one_epoch(sess, ops, num_votes=1, topk=1):
             shuffled_indices = np.arange(NUM_POINT)
             np.random.shuffle(shuffled_indices)
             if FLAGS.normal:
-                rotated_data = provider.rotate_point_cloud_by_angle_with_normal(cur_batch_data[:, shuffled_indices, :],
-                    vote_idx/float(num_votes) * np.pi * 2)
+                #rotated_data = provider.rotate_point_cloud_by_angle_with_normal(cur_batch_data[:, shuffled_indices, :],
+                #    vote_idx/float(num_votes) * np.pi * 2)
+                rotated_data = provider.rotate_point_cloud(cur_batch_data[:, shuffled_indices, :])
             else:
-                rotated_data = provider.rotate_point_cloud_by_angle(cur_batch_data[:, shuffled_indices, :],
-                    vote_idx/float(num_votes) * np.pi * 2)
+                #rotated_data = provider.rotate_point_cloud_by_angle(cur_batch_data[:, shuffled_indices, :],
+                #    vote_idx/float(num_votes) * np.pi * 2)
+                rotated_data = provider.rotate_point_cloud(cur_batch_data[:, shuffled_indices, :])
             feed_dict = {ops['pointclouds_pl']: rotated_data,
                          ops['labels_pl']: cur_batch_label,
                          ops['is_training_pl']: is_training}
