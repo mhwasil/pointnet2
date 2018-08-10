@@ -35,7 +35,8 @@ parser.add_argument('--optimizer', default='adam', help='adam or momentum [defau
 parser.add_argument('--decay_step', type=int, default=200000, help='Decay step for lr decay [default: 200000]')
 parser.add_argument('--decay_rate', type=float, default=0.7, help='Decay rate for lr decay [default: 0.7]')
 parser.add_argument('--normal', action='store_true', help='Whether to use normal information')
-parser.add_argument('--modelnet_10', type=bool, default=False)
+parser.add_argument('--dataset_name', default='atwork', help='Dataset name')
+parser.add_argument('--dataset_path', default='dataset_generator/atwork_generated_dataset', help='Dataset path')
 FLAGS = parser.parse_args()
 
 EPOCH_CNT = 0
@@ -49,7 +50,9 @@ MOMENTUM = FLAGS.momentum
 OPTIMIZER = FLAGS.optimizer
 DECAY_STEP = FLAGS.decay_step
 DECAY_RATE = FLAGS.decay_rate
-MODELNET_10 =FLAGS.modelnet_10
+#MODELNET_10 = FLAGS.modelnet_10
+DATASET_PATH = FLAGS.dataset_path
+DATASET_NAME = FLAGS.dataset_name
 
 MODEL = importlib.import_module(FLAGS.model) # import network module
 MODEL_FILE = os.path.join(ROOT_DIR, 'models', FLAGS.model+'.py')
@@ -72,9 +75,13 @@ NUM_CLASSES = 40
 # Shapenet official train/test split
 if FLAGS.normal:
     assert(NUM_POINT<=10000)
-    DATA_PATH = os.path.join(ROOT_DIR, 'data/modelnet40_normal_resampled')
-    TRAIN_DATASET = modelnet_dataset.ModelNetDataset(root=DATA_PATH, npoints=NUM_POINT, split='train', normal_channel=FLAGS.normal, batch_size=BATCH_SIZE, modelnet10=MODELNET_10)
-    TEST_DATASET = modelnet_dataset.ModelNetDataset(root=DATA_PATH, npoints=NUM_POINT, split='test', normal_channel=FLAGS.normal, batch_size=BATCH_SIZE, modelnet10=MODELNET_10)
+    DATA_PATH = os.path.join(ROOT_DIR, DATASET_PATH)
+    TRAIN_DATASET = modelnet_dataset.ModelNetDataset(root=DATA_PATH, npoints=NUM_POINT, split='train', 
+                    normal_channel=False, batch_size=BATCH_SIZE,
+                    class_name_path="shape_names.txt", dataset=DATASET_NAME)
+    TEST_DATASET = modelnet_dataset.ModelNetDataset(root=DATA_PATH, npoints=NUM_POINT, split='test', 
+                    normal_channel=False, batch_size=BATCH_SIZE,
+                    class_name_path="shape_names.txt", dataset=DATASET_NAME)
 #else:
 #    assert(NUM_POINT<=2048)
 #    TRAIN_DATASET = modelnet_h5_dataset.ModelNetH5Dataset(os.path.join(BASE_DIR, 'data/modelnet40_ply_hdf5_2048/train_files.txt'), batch_size=BATCH_SIZE, npoints=NUM_POINT, shuffle=True)
@@ -251,10 +258,13 @@ def eval_one_epoch(sess, ops, test_writer):
     while TEST_DATASET.has_next_batch():
         batch_data, batch_label = TEST_DATASET.next_batch(augment=False)
         bsize = batch_data.shape[0]
+
         # for the last batch in the epoch, the bsize:end are from last batch
         cur_batch_data[0:bsize,...] = batch_data
         cur_batch_label[0:bsize] = batch_label
-
+        #print("bsize", bsize)
+        #print("Curr data", cur_batch_data.shape)
+        #print("Curr label", cur_batch_data.shape)
         feed_dict = {ops['pointclouds_pl']: cur_batch_data,
                      ops['labels_pl']: cur_batch_label,
                      ops['is_training_pl']: is_training}

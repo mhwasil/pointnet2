@@ -21,28 +21,43 @@ def pc_normalize(pc):
     return pc
 
 class ModelNetDataset():
-    def __init__(self, root, batch_size = 32, npoints = 1024, split='train', normalize=True, normal_channel=False, modelnet10=False, cache_size=15000, shuffle=None):
+    def __init__(self, root, batch_size = 32, npoints = 1024, split='train', normalize=True, 
+                 normal_channel=False, modelnet10=False, cache_size=15000, shuffle=None,
+                 class_name_path='shape_names.txt', dataset='atwork'):
         self.root = root
         self.batch_size = batch_size
         self.npoints = npoints
         self.normalize = normalize
-        if modelnet10:
-            self.catfile = os.path.join(self.root, 'modelnet10_shape_names.txt')
-        else:
-            self.catfile = os.path.join(self.root, 'shape_names.txt')
+        self.catfile = os.path.join(self.root, class_name_path)
+        #if modelnet10:
+        #    self.catfile = os.path.join(self.root, 'modelnet10_shape_names.txt')
+        #else:
+        #    self.catfile = os.path.join(self.root, 'shape_names.txt')
         self.cat = [line.rstrip() for line in open(self.catfile)]
         self.classes = dict(zip(self.cat, range(len(self.cat))))  
         self.normal_channel = normal_channel
         print (self.classes)
         shape_ids = {}
-        if modelnet10:
-            shape_ids['train'] = [line.rstrip() for line in open(os.path.join(self.root, 'modelnet10_train.txt'))] 
-            shape_ids['test']= [line.rstrip() for line in open(os.path.join(self.root, 'modelnet10_test.txt'))]
+
+        if dataset=="atwork":
+            shape_ids['train'] = [line.rstrip() for line in open(os.path.join(self.root, dataset+"_train.txt"))] 
+            shape_ids['test']= [line.rstrip() for line in open(os.path.join(self.root, dataset+"_test.txt"))]
+        elif dataset=="modelnet10":
+            shape_ids['train'] = [line.rstrip() for line in open(os.path.join(self.root, dataset+'_train.txt'))] 
+            shape_ids['test']= [line.rstrip() for line in open(os.path.join(self.root, dataset+'_test.txt'))]
+        elif dataset=="modelnet40":
+            shape_ids['train'] = [line.rstrip() for line in open(os.path.join(self.root, dataset+'_train.txt'))] 
+            shape_ids['test']= [line.rstrip() for line in open(os.path.join(self.root, dataset+'_test.txt'))]
         else:
-            #shape_ids['train'] = [line.rstrip() for line in open(os.path.join(self.root, 'modelnet40_train.txt'))] 
-            #shape_ids['test']= [line.rstrip() for line in open(os.path.join(self.root, 'modelnet40_test.txt'))]
-            shape_ids['train'] = [line.rstrip() for line in open(os.path.join(self.root, 'modelnet14_train.txt'))] 
-            shape_ids['test']= [line.rstrip() for line in open(os.path.join(self.root, 'modelnet14_test.txt'))]
+            print("Dataset is not given")
+        # if modelnet10:
+        #     shape_ids['train'] = [line.rstrip() for line in open(os.path.join(self.root, 'modelnet10_train.txt'))] 
+        #     shape_ids['test']= [line.rstrip() for line in open(os.path.join(self.root, 'modelnet10_test.txt'))]
+        # else:
+        #     #shape_ids['train'] = [line.rstrip() for line in open(os.path.join(self.root, 'modelnet40_train.txt'))] 
+        #     #shape_ids['test']= [line.rstrip() for line in open(os.path.join(self.root, 'modelnet40_test.txt'))]
+        #     shape_ids['train'] = [line.rstrip() for line in open(os.path.join(self.root, 'modelnet14_train.txt'))] 
+        #     shape_ids['test']= [line.rstrip() for line in open(os.path.join(self.root, 'modelnet14_test.txt'))]
         assert(split=='train' or split=='test')
         shape_names = ['_'.join(x.split('_')[0:-1]) for x in shape_ids[split]]
         # list of (shape_name, shape_txt_file_path) tuple
@@ -131,7 +146,8 @@ class ModelNetDataset():
     
 if __name__ == '__main__':
     d = ModelNetDataset(root = 'dataset_generator/atwork_generated_dataset', 
-                        split='test', modelnet10=False, npoints=120)
+                        split='test', modelnet10=False, npoints=130,
+                        class_name_path="shape_names.txt", dataset="atwork")
     print(d.shuffle)
     print(len(d))
     import time
