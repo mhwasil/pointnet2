@@ -121,6 +121,7 @@ def eval_one_epoch(sess, ops, num_votes=1, topk=1):
     shape_ious = []
     total_seen_class = [0 for _ in range(NUM_CLASSES)]
     total_correct_class = [0 for _ in range(NUM_CLASSES)]
+    los_val = None
 
     while TEST_DATASET.has_next_batch():
         batch_data, batch_label = TEST_DATASET.next_batch(augment=False)
