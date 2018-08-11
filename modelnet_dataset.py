@@ -39,17 +39,21 @@ class ModelNetDataset():
         print (self.classes)
         shape_ids = {}
 
-        if dataset=="atwork":
-            shape_ids['train'] = [line.rstrip() for line in open(os.path.join(self.root, dataset+"_train.txt"))] 
-            shape_ids['test']= [line.rstrip() for line in open(os.path.join(self.root, dataset+"_test.txt"))]
-        elif dataset=="modelnet10":
-            shape_ids['train'] = [line.rstrip() for line in open(os.path.join(self.root, dataset+'_train.txt'))] 
-            shape_ids['test']= [line.rstrip() for line in open(os.path.join(self.root, dataset+'_test.txt'))]
-        elif dataset=="modelnet40":
-            shape_ids['train'] = [line.rstrip() for line in open(os.path.join(self.root, dataset+'_train.txt'))] 
-            shape_ids['test']= [line.rstrip() for line in open(os.path.join(self.root, dataset+'_test.txt'))]
-        else:
-            print("Dataset is not given")
+        shape_ids['train'] = [line.rstrip() for line in open(os.path.join(self.root, dataset+"_train.txt"))] 
+        shape_ids['test']= [line.rstrip() for line in open(os.path.join(self.root, dataset+"_test.txt"))]
+
+        #if dataset=="atwork":
+        #    shape_ids['train'] = [line.rstrip() for line in open(os.path.join(self.root, dataset+"_train.txt"))] 
+        #    shape_ids['test']= [line.rstrip() for line in open(os.path.join(self.root, dataset+"_test.txt"))]
+        #elif dataset=="modelnet10":
+        #    shape_ids['train'] = [line.rstrip() for line in open(os.path.join(self.root, dataset+'_train.txt'))] 
+        #    shape_ids['test']= [line.rstrip() for line in open(os.path.join(self.root, dataset+'_test.txt'))]
+        #elif dataset=="modelnet40":
+        #    shape_ids['train'] = [line.rstrip() for line in open(os.path.join(self.root, dataset+'_train.txt'))] 
+        #    shape_ids['test']= [line.rstrip() for line in open(os.path.join(self.root, dataset+'_test.txt'))]
+        #else:
+        #    print("Dataset is not given")
+        
         # if modelnet10:
         #     shape_ids['train'] = [line.rstrip() for line in open(os.path.join(self.root, 'modelnet10_train.txt'))] 
         #     shape_ids['test']= [line.rstrip() for line in open(os.path.join(self.root, 'modelnet10_test.txt'))]
